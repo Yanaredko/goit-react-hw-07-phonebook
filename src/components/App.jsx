@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addContact, deleteContact, setFilter } from "../redux/counterSlice";
+import { addContact, deleteContact, fetchContacts, setFilter } from "../redux/counterSlice";
 import ContactForm from "./ContactForm.jsx";
 import ContactList from "./ContactList.jsx";
 import Filter from "./Filter.jsx";
@@ -9,20 +9,27 @@ function App() {
   const dispatch = useDispatch();
   const filter = useSelector((state) => state.contacts.filter);
   const contacts = useSelector((state) => state.contacts.items);
+  const isLoading = useSelector((state) => state.contacts.isLoading);
+  const error = useSelector((state) => state.contacts.error);
 
- const handleAddContact = (newContact) => {
-  const existingContact = contacts.find(
-    (contact) => contact.name && contact.name.toLowerCase() === newContact.name.toLowerCase()
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
-  if (existingContact) {
-    alert(`Contact ${existingContact.name} was already added.`);
-    return;
-  }
+  const handleAddContact = (newContact) => {
+    const existingContact = contacts.find(
+      (contact) =>
+        contact.name &&
+        contact.name.toLowerCase() === newContact.name.toLowerCase()
+    );
 
-  dispatch(addContact(newContact));
-};
+    if (existingContact) {
+      alert(`Contact ${existingContact.name} was already added.`);
+      return;
+    }
 
+    dispatch(addContact(newContact));
+  };
 
   const handleFilterChange = (event) => {
     dispatch(setFilter(event.target.value));
@@ -43,25 +50,22 @@ function App() {
       <h1>Phonebook</h1>
       <ContactForm onAddContact={handleAddContact} />
 
-      <h2 style={{ marginLeft: "20px" }}>Contacts</h2>
-      <Filter filter={filter} onFilterChange={handleFilterChange} />
-      <ContactList
-        contacts={filteredContacts}
-        onDeleteContact={handleDeleteContact}
-      />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <>
+          <h2 style={{ marginLeft: "20px" }}>Contacts</h2>
+          <Filter filter={filter} onFilterChange={handleFilterChange} />
+          <ContactList
+            contacts={filteredContacts}
+            onDeleteContact={handleDeleteContact}
+          />
+        </>
+      )}
     </div>
   );
 }
 
 export default App;
-
-// App.propTypes = {
-//   contacts: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       name: PropTypes.string.isRequired,
-//       number: PropTypes.string.isRequired,
-//     })
-//   ).isRequired,
-//   filter: PropTypes.string.isRequired,
-// };

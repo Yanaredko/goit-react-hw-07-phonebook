@@ -1,13 +1,12 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import contactsReducer from "../redux/counterSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { combineReducers } from 'redux';
 
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["filter"],
+  blacklist: ["contacts"],
 };
 
 const rootReducer = combineReducers({
@@ -25,4 +24,3 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-
