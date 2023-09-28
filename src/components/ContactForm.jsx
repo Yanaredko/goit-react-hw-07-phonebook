@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 
 class ContactForm extends Component {
   state = {
@@ -19,7 +19,7 @@ class ContactForm extends Component {
       const newContact = {
         name: this.state.name,
         number: this.state.number,
-        id: nanoid()
+        // id: nanoid()
       };
       this.props.onAddContact(newContact);
       this.setState({ name: "", number: "" });
